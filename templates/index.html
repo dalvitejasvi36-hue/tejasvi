@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SciWrite AI</title>
+    <style>
+        @import url('[https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap)');
+        
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body {
+            margin: 0; padding: 0;
+            background: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            height: 100vh;
+            display: flex;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 300px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .sci-logo {
+            display: flex; align-items: center; gap: 10px;
+            padding: 22px 20px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 18px;
+        }
+        .sci-logo-icon {
+            width: 34px; height: 34px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white;
+        }
+        .sci-logo-text { font-size: 1.05rem; font-weight: 700; color: #0f172a; letter-spacing: -0.01em; }
+        .sci-logo-badge { font-size: 0.58rem; font-weight: 600; background: linear-gradient(90deg, #3b82f6, #8b5cf6); color: #fff; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.08em; text-transform: uppercase; }
+        .sb-group { padding: 10px 20px; }
+        .sb-label { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #64748b; margin-bottom: 8px; display: block; }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
+        }
+        .hero-wrap { padding: 10px 0 24px; border-bottom: 1px solid #e2e8f0; margin-bottom: 28px; }
+        .hero-eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #3b82f6; margin-bottom: 10px; }
+        .hero-h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 2.6rem; font-weight: 700; line-height: 1.1; background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #db2777 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; }
+        .hero-sub { font-size: 1rem; color: #475569; max-width: 620px; line-height: 1.6; }
+        .stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+        .stat-pill { display: inline-flex; align-items: center; gap: 7px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 20px; padding: 5px 13px; font-size: 0.78rem; font-weight: 500; color: #2563eb; }
+
+        /* TABS */
+        .tabs { display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 20px; }
+        .tab-btn { background: none; border: none; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #64748b; padding: 12px 24px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .tab-btn:hover { color: #3b82f6; }
+        .tab-btn.active { color: #8b5cf6; border-bottom-color: #8b5cf6; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* CARDS & FORMS */
+        .sec-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+        .sec-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+        .sec-icon-blue { background: #eff6ff; color: #2563eb; }
+        .sec-icon-purple { background: #f3e8ff; color: #9333ea; }
+        .sec-icon-green { background: #dcfce7; color: #16a34a; }
+        .sec-icon-pink { background: #fce7f3; color: #db2777; }
+        .sec-title { font-size: 1.05rem; font-weight: 600; color: #0f172a; }
+        .sec-sub { font-size: 0.78rem; color: #64748b; margin-top: 2px; }
+
+        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-sm { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 14px 16px; margin-bottom: 16px; display: flex; gap: 24px; flex-wrap: wrap;}
+        
+        .form-group { margin-bottom: 16px; }
+        label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #475569; margin-bottom: 6px; display: block; }
+        input[type="text"], input[type="password"], input[type="number"], select, textarea {
+            width: 100%; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; color: #1e293b; font-size: 0.87rem; font-family: 'Inter', sans-serif; transition: border-color 0.15s;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        textarea { resize: vertical; }
+
+        /* AUTHORS TABLE */
+        .authors-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        .authors-table th, .authors-table td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
+        .authors-table th { background: #f8fafc; font-size: 0.75rem; color: #64748b; text-transform: uppercase; }
+        .btn-sm { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; color: #475569; }
+        .btn-sm:hover { background: #e2e8f0; }
+
+        /* BUTTONS */
+        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: #fff; border: none; border-radius: 9px; padding: 0.8rem 1.8rem; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.04em; cursor: pointer; transition: opacity 0.2s, transform 0.1s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25); width: 100%; }
+        .btn-primary:hover:not(:disabled) { opacity: 0.92; transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+
+        .dl-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; flex: 1; text-align: center; }
+        .dl-card-title { font-size: 0.9rem; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .dl-card-meta { font-size: 0.75rem; color: #64748b; margin-bottom: 14px; }
+        .btn-outline { display: inline-block; background: #ffffff; color: #3b82f6; border: 1px solid #93c5fd; border-radius: 8px; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.15s; width: 100%; text-align: center; }
+        .btn-outline:hover { background: #eff6ff; border-color: #3b82f6; transform: translateY(-1px); }
+        .btn-success { border-color: #86efac; color: #16a34a; }
+        .btn-success:hover { background: #f0fdf4; border-color: #16a34a; }
+
+        /* LAYOUT UTILS */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .flex-row { display: flex; gap: 16px; }
+
+        /* OUTPUT STYLES */
+        .gen-status-bar { display: flex; align-items: center; gap: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; }
+        .gen-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e; flex-shrink: 0; }
+        .gen-status-text { font-size: 0.85rem; font-weight: 600; color: #16a34a; }
+        .gen-status-meta { font-size: 0.78rem; color: #475569; margin-left: auto; }
+        
+        details { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+        summary { padding: 12px 16px; font-size: 0.85rem; font-weight: 600; color: #334155; background: #f8fafc; cursor: pointer; user-select: none; }
+        details > div { padding: 16px; font-family: monospace; font-size: 0.75rem; background: #0f172a; color: #e2e8f0; white-space: pre-wrap; overflow-x: auto; max-height: 400px; }
+        
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #output-section { display: none; margin-top: 30px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sci-logo">
+            <div class="sci-logo-icon">&#128300;</div>
+            <div class="sci-logo-text">SciWrite AI</div>
+            <div class="sci-logo-badge">v2.0</div>
+        </div>
+
+        <div class="sb-group">
+            <label class="sb-label">API Configuration</label>
+            <input type="password" id="api_key" placeholder="Gemini API Key (AIzaSy...)">
+            <div style="font-size:0.72rem;color:#64748b;margin-top:4px;">Fallback to ENV if empty</div>
+        </div>
+
+        <div class="sb-group">
+            <label class="sb-label">Document Layout</label>
+            <select id="layout_opt">
+                <option value="Single Column">Single Column</option>
+                <option value="Double Column">Double Column</option>
+            </select>
+        </div>
+
+        <div class="sb-group">
+            <label class="sb-label">Paper Length</label>
+            <div style="display:flex;gap:10px;margin-bottom:8px;">
+                <label style="font-weight:normal;text-transform:none;"><input type="radio" name="len_mode" value="Pages" checked onchange="updateLengthMode()"> Pages</label>
+                <label style="font-weight:normal;text-transform:none;"><input type="radio" name="len_mode" value="Words" onchange="updateLengthMode()"> Words</label>
+            </div>
+            <input type="number" id="length_val" value="8" min="4" max="20" oninput="updateWordEst()">
+            <div id="word_est" style="font-size:0.75rem;color:#64748b;margin-top:6px;">~3,600 words &middot; ~8 pages</div>
+        </div>
+
+        <div class="sb-group">
+            <label class="sb-label">Target Venue</label>
+            <select id="venue">
+                <option>NeurIPS</option><option>ICML</option><option>ICLR</option><option>CVPR</option>
+                <option>ACL</option><option>Nature</option><option>Science</option>
+                <option>IEEE Transactions</option><option>AAAI</option><option>Custom / Unspecified</option>
+            </select>
+        </div>
+
+        <div class="sb-group">
+            <label class="sb-label">Upload Figures</label>
+            <input type="file" id="uploaded_figs" multiple accept=".png,.jpg,.jpeg">
+        </div>
+        
+        <hr style="border:0;border-top:1px solid #e2e8f0;margin:10px 0;">
+        
+        <div class="sb-group" style="font-size:0.7rem;color:#475569;line-height:1.9;">
+            <b style="color:#0f172a;">Workflow</b><br>
+            1 &middot; Fill Metadata &amp; Context<br>
+            2 &middot; Set length in sidebar<br>
+            3 &middot; Generate Paper<br>
+            4 &middot; Download .tex + .pdf<br>
+            5 &middot; Or open in Overleaf
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="hero-wrap">
+            <div class="hero-eyebrow">AI-Powered Academic Writing</div>
+            <div class="hero-h1">SciWrite AI</div>
+            <div class="hero-sub">Transform research notes into full-length, publication-ready papers. Gemini writes every section &mdash; equations, citations, tables &mdash; then compiles to PDF.</div>
+            <div class="stat-row">
+                <div class="stat-pill">&#128300; Gemini 2.0 Flash</div>
+                <div class="stat-pill">&#128208; LaTeX + pdflatex</div>
+                <div class="stat-pill">&#128196; Up to 20 pages</div>
+                <div class="stat-pill">&#127963; Vercel Serverless</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-meta')">&#128203; Metadata</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-ctx')">&#128300; Research Context</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-bib')">&#128218; Bibliography</button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-gen')">&#128640; Generate &amp; Export</button>
+        </div>
+
+        <div id="tab-meta" class="tab-content active">
+            <div class="sec-header">
+                <div class="sec-icon sec-icon-blue">&#128203;</div>
+                <div><div class="sec-title">Document Metadata</div><div class="sec-sub">Title, authors, affiliations and keywords</div></div>
+            </div>
+            <div class="card">
+                <div class="form-group">
+                    <label>Paper Title</label>
+                    <input type="text" id="paper_title" value="Deep Multimodal Fusion for Robust Temporal Sequence Modelling in Noisy Environments">
+                </div>
+                <div class="form-group">
+                    <label>Keywords (comma-separated)</label>
+                    <input type="text" id="paper_keywords" value="multimodal learning, temporal modelling, attention mechanisms, deep learning">
+                </div>
+            </div>
+            
+            <div class="sec-header">
+                <div class="sec-icon sec-icon-purple">&#128101;</div>
+                <div><div class="sec-title">Authors</div></div>
+            </div>
+            <div class="card">
+                <table class="authors-table" id="authors-table">
+                    <thead><tr><th>Full Name</th><th>Affiliation</th><th>Email</th><th></th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" value="Alice J. Researcher"></td>
+                            <td><input type="text" value="MIT CSAIL, Cambridge, MA, USA"></td>
+                            <td><input type="text" value="aresearcher@mit.edu"></td>
+                            <td><button class="btn-sm" onclick="removeRow(this)">X</button></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" value="Bob K. Scholar"></td>
+                            <td><input type="text" value="Stanford NLP Group, Stanford, CA, USA"></td>
+                            <td><input type="text" value="bscholar@stanford.edu"></td>
+                            <td><button class="btn-sm" onclick="removeRow(this)">X</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn-sm" onclick="addAuthorRow()">+ Add Author</button>
+            </div>
+        </div>
+
+        <div id="tab-ctx" class="tab-content">
+            <div class="sec-header">
+                <div class="sec-icon sec-icon-green">&#128300;</div>
+                <div><div class="sec-title">Research Context</div><div class="sec-sub">Notes or bullet points &mdash; Gemini expands everything into full academic prose</div></div>
+            </div>
+            <div class="card grid-2">
+                <div>
+                    <div class="form-group">
+                        <label>Abstract Goals & Contributions</label>
+                        <textarea id="abstract_goals" rows="6">* Novel cross-modal attention architecture
+* +4.2% over SOTA on MSR-VTT
+* 3x fewer parameters than TransformerXL</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Methodology</label>
+                        <textarea id="methodology_notes" rows="8">* Dual-stream encoder: visual (ViT-L) + textual (BERT-large)
+* Cross-modal attention at layers 4, 8, 12
+* Contrastive pre-training on 50M pairs
+* AdamW, lr=3e-4, cosine schedule, 100 epochs</textarea>
+                    </div>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <label>Introduction & Background</label>
+                        <textarea id="intro_bg" rows="6">* Multimodal learning surged since ViLBERT (2019)
+* Temporal alignment in video+text remains unsolved
+* Existing methods fail under occlusion and noise</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Results & Experimental Data</label>
+                        <textarea id="results_data" rows="8">* Ours 89.4% vs CLIP 85.2% on MSR-VTT R@1
+* Ablation: removing visual stream -6.1%
+* Latency: 14ms vs 42ms for nearest baseline
+* FLOPS: 18.3B vs 52.1B for TransformerXL</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="form-group">
+                    <label>Additional Notes / Special Instructions (optional)</label>
+                    <textarea id="extra_notes" rows="3" placeholder="e.g. Emphasise efficiency, add limitations subsection..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-bib" class="tab-content">
+            <div class="sec-header">
+                <div class="sec-icon sec-icon-pink">&#128218;</div>
+                <div><div class="sec-title">Bibliography</div><div class="sec-sub">Paste raw BibTeX &mdash; cite keys are auto-extracted and given to Gemini</div></div>
+            </div>
+            <div class="card">
+                <textarea id="bibtex_entries" rows="18">@inproceedings{vaswani2017attention,
+  title     = {Attention Is All You Need},
+  author    = {Vaswani, Ashish and others},
+  booktitle = {NeurIPS},
+  year      = {2017},
+}
+@article{devlin2019bert,
+  title   = {BERT: Pre-training of Deep Bidirectional Transformers},
+  author  = {Devlin, Jacob and others},
+  journal = {arXiv:1810.04805},
+  year    = {2019},
+}</textarea>
+            </div>
+        </div>
+
+        <div id="tab-gen" class="tab-content">
+            <div class="sec-header">
+                <div class="sec-icon sec-icon-blue">&#128640;</div>
+                <div><div class="sec-title">Generate & Export</div><div class="sec-sub">One click &rarr; full paper &middot; LaTeX source &middot; compiled PDF</div></div>
+            </div>
+            
+            <div class="card-sm" id="gen_summary">
+                <span style="font-size:0.85rem;color:#475569;">&#128208; <b id="sum_layout">Single Column</b></span>
+                <span style="font-size:0.85rem;color:#475569;">&#128196; <b id="sum_pages">~8 pages</b></span>
+                <span style="font-size:0.85rem;color:#475569;">&#128221; <b id="sum_words">~3600 words</b></span>
+            </div>
+
+            <div style="max-width:400px;">
+                <button class="btn-primary" id="generate_btn" onclick="generatePaper()">
+                    <span class="loader" id="loader"></span> &#10024; Generate Full Paper
+                </button>
+                <div id="status_msg" style="margin-top:10px; font-size:0.85rem; color:#64748b;"></div>
+            </div>
+
+            <div id="output-section">
+                <hr style="border:0;border-top:1px solid #e2e8f0;margin:30px 0;">
+                
+                <div class="gen-status-bar">
+                    <div class="gen-status-dot"></div>
+                    <div class="gen-status-text">Paper successfully generated!</div>
+                    <div class="gen-status-meta" id="out_meta"></div>
+                </div>
+
+                <div class="flex-row" style="margin-bottom:20px;">
+                    <div class="dl-card">
+                        <div class="dl-card-title">📝 LaTeX Source</div>
+                        <div class="dl-card-meta">.tex file &middot; single source</div>
+                        <a id="dl_tex" class="btn-outline" download="main.tex">📥 Download .tex Only</a>
+                    </div>
+                    <div class="dl-card">
+                        <div class="dl-card-title">📦 Overleaf Ready Bundle</div>
+                        <div class="dl-card-meta">.zip file &middot; Includes graphs</div>
+                        <a id="dl_zip" class="btn-outline" download="sciwrite_project.zip">📥 Download Project ZIP</a>
+                    </div>
+                    <div class="dl-card" id="pdf_card" style="display:none;">
+                        <div class="dl-card-title">📄 Compiled PDF</div>
+                        <div class="dl-card-meta">.pdf file &middot; pdflatex</div>
+                        <a id="dl_pdf" class="btn-outline btn-success" download="paper.pdf">📥 Download PDF</a>
+                    </div>
+                    <div class="dl-card">
+                        <div class="dl-card-title">🌐 Open in Overleaf</div>
+                        <div class="dl-card-meta">Edit online</div>
+                        <a href="[https://www.overleaf.com/project/new/upload](https://www.overleaf.com/project/new/upload)" target="_blank" class="btn-outline btn-success">↗ New Overleaf Project</a>
+                    </div>
+                </div>
+
+                <details>
+                    <summary>&#128202; Word count by section</summary>
+                    <div style="background:#fff;color:#1e293b;padding:0;" id="wc_table_container"></div>
+                </details>
+                
+                <details>
+                    <summary>&#128209; Preview generated sections</summary>
+                    <div id="sec_preview"></div>
+                </details>
+
+                <details>
+                    <summary>&#128295; Raw LaTeX source</summary>
+                    <div id="raw_latex"></div>
+                </details>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // TABS LOGIC
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) tabcontent[i].style.display = "none";
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) tablinks[i].className = tablinks[i].className.replace(" active", "");
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // AUTHORS LOGIC
+        function addAuthorRow() {
+            const table = document.getElementById("authors-table").getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+                <td><input type="text" placeholder="Name"></td>
+                <td><input type="text" placeholder="Affiliation"></td>
+                <td><input type="text" placeholder="Email"></td>
+                <td><button class="btn-sm" onclick="removeRow(this)">X</button></td>
+            `;
+        }
+        function removeRow(btn) {
+            const row = btn.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+        function getAuthorsJSON() {
+            const rows = document.getElementById("authors-table").getElementsByTagName('tbody')[0].rows;
+            const authors = [];
+            for (let i = 0; i < rows.length; i++) {
+                const inputs = rows[i].getElementsByTagName("input");
+                if (inputs[0].value.trim() !== "") {
+                    authors.push({
+                        "Name": inputs[0].value.trim(),
+                        "Affiliation": inputs[1].value.trim(),
+                        "Email": inputs[2].value.trim()
+                    });
+                }
+            }
+            return JSON.stringify(authors);
+        }
+
+        // LENGTH ESTIMATION LOGIC
+        function updateLengthMode() {
+            const mode = document.querySelector('input[name="len_mode"]:checked').value;
+            const input = document.getElementById("length_val");
+            if (mode === "Pages") {
+                input.value = "8"; input.min = "4"; input.max = "20"; input.step = "1";
+            } else {
+                input.value = "5000"; input.min = "1500"; input.max = "12000"; input.step = "500";
+            }
+            updateWordEst();
+        }
+        function updateWordEst() {
+            const mode = document.querySelector('input[name="len_mode"]:checked').value;
+            const val = parseInt(document.getElementById("length_val").value) || 0;
+            const layout = document.getElementById("layout_opt").value;
+            const wpp = layout === "Double Column" ? 600 : 450;
+            
+            let est_words, target_pages;
+            if (mode === "Pages") {
+                target_pages = val;
+                est_words = val * wpp;
+            } else {
+                est_words = val;
+                target_pages = Math.max(4, Math.floor(val / wpp));
+            }
+            document.getElementById("word_est").innerHTML = `~${est_words.toLocaleString()} words &middot; ~${target_pages} pages`;
+            
+            document.getElementById("sum_layout").innerText = layout;
+            document.getElementById("sum_pages").innerText = `~${target_pages} pages`;
+            document.getElementById("sum_words").innerText = `~${est_words.toLocaleString()} words`;
+        }
+        document.getElementById("layout_opt").addEventListener("change", updateWordEst);
+
+        // GENERATE LOGIC
+        async function generatePaper() {
+            const btn = document.getElementById("generate_btn");
+            const loader = document.getElementById("loader");
+            const status = document.getElementById("status_msg");
+            const outputSection = document.getElementById("output-section");
+
+            btn.disabled = true;
+            loader.style.display = "inline-block";
+            outputSection.style.display = "none";
+            
+            // Serverless Timeout Warning
+            status.innerHTML = "Processing via Vercel Serverless (This may take 20-50s due to sequential Gemini API calls)...";
+
+            const formData = new FormData();
+            formData.append("api_key", document.getElementById("api_key").value);
+            formData.append("layout_opt", document.getElementById("layout_opt").value);
+            formData.append("target_pages", document.querySelector('input[name="len_mode"]:checked').value === "Pages" ? document.getElementById("length_val").value : Math.max(4, Math.floor(document.getElementById("length_val").value / (document.getElementById("layout_opt").value === "Double Column" ? 600 : 450))));
+            formData.append("paper_title", document.getElementById("paper_title").value);
+            formData.append("paper_keywords", document.getElementById("paper_keywords").value);
+            formData.append("authors", getAuthorsJSON());
+            formData.append("abstract_goals", document.getElementById("abstract_goals").value);
+            formData.append("methodology_notes", document.getElementById("methodology_notes").value);
+            formData.append("intro_bg", document.getElementById("intro_bg").value);
+            formData.append("results_data", document.getElementById("results_data").value);
+            formData.append("extra_notes", document.getElementById("extra_notes").value);
+            formData.append("bibtex_entries", document.getElementById("bibtex_entries").value);
+            
+            const fileInput = document.getElementById("uploaded_figs");
+            for(let i=0; i<fileInput.files.length; i++) {
+                formData.append("uploaded_figs", fileInput.files[i]);
+            }
+
+            try {
+                const response = await fetch("/api/generate", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    status.innerHTML = "";
+                    outputSection.style.display = "block";
+                    
+                    document.getElementById("out_meta").innerHTML = `${data.total_words.toLocaleString()} words &middot; ${Object.keys(data.sections).length} sections`;
+                    
+                    // Setup Text Download
+                    const texBlob = new Blob([data.latex_src], {type: "text/plain"});
+                    document.getElementById("dl_tex").href = URL.createObjectURL(texBlob);
+                    document.getElementById("raw_latex").textContent = data.latex_src;
+
+                    // Setup ZIP Download
+                    const zipBinaryStr = atob(data.zip_b64);
+                    const zipLen = zipBinaryStr.length;
+                    const zipBytes = new Uint8Array(zipLen);
+                    for (let i = 0; i < zipLen; i++) zipBytes[i] = zipBinaryStr.charCodeAt(i);
+                    const zipBlob = new Blob([zipBytes], {type: "application/zip"});
+                    document.getElementById("dl_zip").href = URL.createObjectURL(zipBlob);
+
+                    // Setup PDF Download (if successful, else Vercel pdflatex failed as expected)
+                    if (data.pdf_b64) {
+                        const pdfBinaryStr = atob(data.pdf_b64);
+                        const pdfBytes = new Uint8Array(pdfBinaryStr.length);
+                        for (let i = 0; i < pdfBinaryStr.length; i++) pdfBytes[i] = pdfBinaryStr.charCodeAt(i);
+                        const pdfBlob = new Blob([pdfBytes], {type: "application/pdf"});
+                        document.getElementById("dl_pdf").href = URL.createObjectURL(pdfBlob);
+                        document.getElementById("pdf_card").style.display = "block";
+                    } else {
+                        document.getElementById("pdf_card").style.display = "none";
+                    }
+
+                    // Setup Preview
+                    let previewHTML = "";
+                    let tableHTML = "<table class='authors-table'><thead><tr><th>Section</th><th>Written</th><th>Target</th></tr></thead><tbody>";
+                    
+                    for (const [tag, text] of Object.entries(data.sections)) {
+                        const wordCount = data.word_counts[tag];
+                        const target = data.sec_targets[tag] || 0;
+                        tableHTML += `<tr><td>${tag.replace(/_/g, ' ')}</td><td>${wordCount}</td><td>${target}</td></tr>`;
+                        previewHTML += `<div style="color:#8b5cf6;font-weight:bold;margin:15px 0 5px;">${tag.replace(/_/g, ' ')} <span style="color:#64748b;font-weight:normal;">(${wordCount} words)</span></div><div>${text.substring(0,2000)}${text.length > 2000 ? '...' : ''}</div>`;
+                    }
+                    tableHTML += "</tbody></table>";
+                    document.getElementById("wc_table_container").innerHTML = tableHTML;
+                    document.getElementById("sec_preview").innerHTML = previewHTML;
+
+                } else {
+                    status.innerHTML = `<span style="color:#ef4444;">Error: ${data.error}</span>`;
+                }
+            } catch (err) {
+                status.innerHTML = `<span style="color:#ef4444;">Network/Timeout Error: ${err.message}. Vercel maxDuration exceeded.</span>`;
+            } finally {
+                btn.disabled = false;
+                loader.style.display = "none";
+            }
+        }
+
+        // Initialize estimates on load
+        updateWordEst();
+    </script>
+</body>
+</html>
